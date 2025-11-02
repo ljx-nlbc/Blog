@@ -1,0 +1,13 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+{% if form.error %}
+    <p>
+        你的用户名或者密码不正确，请重试。
+    </p>
+{% endif %}
+<form action="{% url 'accounts:login' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_div}}
+    <button name="submit">登陆</button>
+</form>
+{%endblock content%}

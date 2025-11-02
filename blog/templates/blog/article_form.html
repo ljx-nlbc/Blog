@@ -1,0 +1,44 @@
+{% extends 'blog/base.html' %}
+{% block title %}
+    {% if form.instance.pk %}编辑文章{% else %}创建文章{% endif %}-我的博客
+{% endblock %}
+
+{%block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">{% if form.instance.pk %}编辑文章{% else %}创建新文章{% endif %}</h2>
+            
+            <form action="{%url 'blog:article_create' %}" method="post">
+                {% csrf_token %}
+                {{form.as_div}}
+                <div class="d-flex justify-content-between">
+                <a href="{% url 'blog:article_list' %}" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if form.instance.pk %}
+                        更新文章
+                    {% else %}
+                        发布文章{% endif %}
+                </button>
+                </div>  
+            </form>
+    </div>
+</div>
+{% endblock %}   
+
+
+<style>
+/* 为表单元素添加样式 */
+.form-control {
+    margin-bottom: 0.5rem;
+}
+
+/* 为多选框添加样式 */
+.form-check {
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-check-input {
+    margin-right: 0.5rem;
+}
+</style>
