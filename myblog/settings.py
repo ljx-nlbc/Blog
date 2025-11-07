@@ -64,6 +64,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -129,3 +130,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = 'blog:article_list'#用户登陆后重定向跳转的页面
 LOGOUT_REDIRECT_URL = 'blog:article_list'#用户退出后重定向跳转的页面
 LOGIN_URL = 'account:login'#将login_required修饰的重定向到指定位置
+
+import os
+
+MEDIA_URL = 'accounts/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

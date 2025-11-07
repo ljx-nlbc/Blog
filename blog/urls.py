@@ -18,5 +18,5 @@ urlpatterns=[
     path('article/<int:pk>/delete/',views.ArticleDeleteView.as_view(),name='atricle_delete'),
     path('category/<int:category_id>/',views.category_articles,name='category_articles'),
     path('article/comment/<int:article_id>/',views.add_comment,name='add_comment'),
-    path('user/<int:user_id>-<str:username>/',views.user_profile,name = 'user_profile'),
+    
 ]

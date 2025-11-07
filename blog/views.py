@@ -55,7 +55,7 @@ def ArticleDetailView(request,article_id):
                 return redirect('blog:article_list')
             article.delete()
             messages.success(request,'文章已删除!')
-            return redirect('blog:user_profile',user_id=request.user.id,username=article.author)
+            return redirect('accounts:homepage',user_id=request.user.id,username=article.author)
         elif 'submit_comment' in request.POST:    
             add_comment(request,article)         
             return redirect('blog:article_detail',article_id=article_id)
@@ -167,7 +167,7 @@ def ArticleUpdateView(request,article_id):
             #设置当前用户为作者
             article.author = request.user
             article_update.save()
-            return redirect('blog:user_profile',user_id=request.user.id,username=article.author)
+            return redirect('accounts:homepage',user_id=request.user.id,username=article.author)
     context = {'form':article_update}
     return render(request,'blog/article_form.html',context)
 
@@ -191,7 +191,7 @@ class ArticleDeleteView(LoginRequiredMixin,UserPassesTestMixin,generic.DeleteVie
     def get_success_url(self):
         """文删除成功的行为"""
         #将界面重定向到用户首页reverse_lazy延迟解析，通常在类属性中，返回的是解析出的url字符串
-        return reverse_lazy('blog:user_profile', kwargs={
+        return reverse_lazy('accounts:homepage', kwargs={
             'user_id': self.request.user.id,
             'username': self.request.user.username}
             )
@@ -206,11 +206,3 @@ def category_articles(request,category_id):
         'articles':articles,
     }
     return render(request,'blog/category_articles.html',context)
-
-def user_profile(request,user_id,username):
-    """用户主页"""
-    user = get_object_or_404(User,id=user_id,username=username)
-    #将不是登陆用户写的文章过滤掉
-    articles = Article.objects.filter(author=user)
-    context={'profile_user':user,'articles':articles}
-    return render(request,'blog/user_profile.html',context)

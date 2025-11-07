@@ -22,13 +22,13 @@
     <div class="btn-group mb-3">
         <a href="{% url 'blog:article_update' article.pk %}" class="btn btn-sm btn-outline-primary">更新文章</a>
         <form method="post" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" name="delete_article"
-                        class="btn btn-outline-danger" 
-                        onclick="return confirm('⚠️ 确定要删除这篇文章吗？此操作无法撤销！')">
-                    🗑️ 删除文章
-                </button>
-            </form>
+            {% csrf_token %}
+            <button type="submit" name="delete_article"
+                    class="btn btn-outline-danger" 
+                    onclick="return confirm('⚠️ 确定要删除这篇文章吗？此操作无法撤销！')">
+                🗑️ 删除文章
+            </button>
+        </form>
     </div>
     {% endif %}
     
@@ -77,6 +77,14 @@
             {% for comment in article.comment_set.all %}
             <div class="card mb-1">
                 <div class="card-body">
+                    <!-- 显示评论者头像 -->
+                    <div class="flex-shrink-0">
+                        <img src="{{ comment.usr.profile.avatar.url }}" 
+                            alt="{{ comment.usr.username }}" 
+                            class="rounded-circle" 
+                            width="40" 
+                            height="40">
+                    </div>
                     <div class="d-flex justify-content-between">
                         <h6 class="card-title">{{ comment.usr }}</h6>
                         <small class="text-muted">{{ comment.created|date:"Y-m-d H:i" }}</small>

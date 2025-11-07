@@ -23,16 +23,40 @@
                 {% endfor %}
                 <div class = "navbar-nav ms-auto">
                     {% if user.is_authenticated %}
-                        <a class="navbar-text me-3" href="{% url 'blog:user_profile' user_id=user.id username=user.username %}">{{user.username}}</a>
-                        <a class="nav-link" href="{% url 'blog:article_create' %}">写文章</a>
-                        <form action="{% url 'accounts:logout' %}" method="post">
-                            {% csrf_token %}
-                            <button name='submit' class="nav-link btn btn-dark">退出</button>
-                        </form>
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle" 
+                            href="{% url 'accounts:homepage' user_id=user.id username=user.username %}" 
+                            role="button" data-bs-toggle="dropdown" onclick="handleAvatarClick(event)">
+                            <img src="{{ user.profile.avatar.url }}" 
+                                alt="{{ user.username }}" 
+                                class="rounded-circle" 
+                                width="30" 
+                                height="30">
+                        </a> 
+                        <script>
+                        function handleAvatarClick(event) {
+                            // 如果点击的是图片本身，则跳转页面
+                            if (event.target.tagName === 'IMG') {
+                                window.location.href = event.currentTarget.href;
+                                event.preventDefault(); // 阻止下拉菜单展开
+                            }
+                            // 如果点击的是其他部分（如下拉箭头），则允许下拉菜单正常展开
+                        }
+                        </script>                 
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'accounts:homepage' user_id=user.id username=user.username %}">个人资料</a></li>
+                            <li><a class="dropdown-item" href="{% url 'blog:article_create' %}">写文章</a></li>
+                            <li><a class="dropdown-item" href="{% url 'blog:article_create' %}">设置</a></li>
+                            <form action="{% url 'accounts:logout' %}" method="post">
+                                {% csrf_token %}
+                                <button name='submit' class="dropdown-item">退出</button>
+                            </form>
+                        </ul>
+                    </div>
+                        
                     {% else %}
                         <a class="nav-link" href="{% url 'accounts:login' %}">登陆</a>
-                        <a class="nav-link" href="{% url 'accounts:register' %}">注册</a>
-                        
+                        <a class="nav-link" href="{% url 'accounts:register' %}">注册</a>                        
                     {% endif %}
                 </div>
             </div>

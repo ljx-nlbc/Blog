@@ -1,8 +1,73 @@
 {% extends "blog/base.html" %}
 {%block content %}
-    <form action="{% url 'accounts:register'%}" method='post'>
+    <form action="{% url 'accounts:register'%}" method='POST' enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_div}}
-        <button name="submit">注册</button>
+        <div class="avatar-section mb-4">          
+            <!-- 头像预览 -->
+            <div class="mb-3 text-center">
+                <label for="avatar-input" style="cursor: pointer;">
+                    <img id="avatar-preview" 
+                         src="{{ MEDIA_URL }}avatars/default.png"
+                         alt="头像预览" 
+                         class="rounded-circle border" 
+                         width="125" 
+                         height="125"
+                         style="cursor: pointer; object-fit: cover;">
+                </label>
+                <div class="mt-2">
+                    <small class="text-muted">点击头像选择图片</small>
+                </div>
+            </div>
+            
+            <!-- 头像上传字段 -->
+            <div class="mb-3" style="display: none;">
+                <input type="file" 
+                       id="avatar-input" 
+                       name="avatar" 
+                       accept="image/*">
+                {% if profileform.avatar.errors %}
+                    <div class="text-danger">
+                        {{ profileform.avatar.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- 个人简介字段 -->
+            <div class="mb-3">
+                <label for="id_bio" class="form-label">个人简介（可选）</label>
+                <textarea name="bio" id="id_bio" class="form-control" rows="3" 
+                          placeholder="简单介绍一下自己...">{{ profileform.bio.value|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!--注册表单-->
+        <div class="registration-section">
+            <h4>账户信息</h4>
+            {{ registerform.as_div }}
+        </div>
+        <button name="submit" class="btn btn-primary mt-3">注册</button>
     </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarInput = document.getElementById('avatar-input');
+    const avatarPreview = document.getElementById('avatar-preview');
+
+    // 点击头像触发文件选择
+    avatarPreview.addEventListener('click', function() {
+        avatarInput.click();
+    });
+
+    // 文件选择后只更新预览，不进行AJAX上传
+    avatarInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                avatarPreview.src = e.target.result;
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+});
+</script>
 {%endblock content%}
