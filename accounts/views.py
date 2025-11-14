@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import Http404
 
 from .forms import AvatarUpdateForm
 from .models import Profile
@@ -53,14 +54,17 @@ def register(request):
 @login_required
 def homepage(request,user_id,username):
     """用户主页"""
+    #首先检查当前登陆用户是否与url中的用户匹配
+    if request.user.id != int(user_id) or request.user.username != username:
+        return redirect('accounts:login')
+
     user = get_object_or_404(User,id=user_id,username=username)
     #将不是登陆用户写的文章过滤掉
-    articles = Article.objects.filter(author=user)
+    articles = Article.objects.filter(author=user)  
     profile,created = Profile.objects.get_or_create(user=request.user)
     #更改个人资料
     if request.method != 'POST':
         form = AvatarUpdateForm(instance=profile)     
-        print("与用户的头像地址：",user.profile.avatar.url)
     else:
         form = AvatarUpdateForm(
             request.POST, 
@@ -69,7 +73,6 @@ def homepage(request,user_id,username):
         )
         if form.is_valid():
             form.save()
-            print("更改用户的头像地址：",user.profile.avatar.url)
             messages.success(request, '个人资料已更新！')
             return redirect('accounts:homepage',user_id=request.user.id,username=user)        
     context = {'profileform': form,'articles':articles,'user':user}
