@@ -76,13 +76,34 @@ WSGI_APPLICATION = "myblog.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+import os
+from django.core.management.utils import get_random_secret_key
+from dotenv import load_dotenv
+load_dotenv()
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",#必选：指定使用的数据库引擎
+        'NAME':os.environ.get('DB_NAME','Blog'),                       #必选：数据库名称第一个参数：环境变量名，第二个参数：默认值（当环境变量不存在时使用）
+        'USER':os.environ.get('DB_USER','admin'),                      #必选：数据库用户名
+        'PASSWORD':os.environ.get('DB_PASSWORD',get_random_secret_key()),#必选：数据库密码
+        'HOST':os.environ.get('DB_HOST','127.0.0.1'),                  #必选：数据库主机地址
+        'PORT':os.environ.get('DB_PORT','3306'),                       #可选：数据库端口，默认就是3306
+        "OPTIONS":{ 
+            'charset':'utf8mb4',             #推荐：支持完整Unicode
+            'init_command':"SET sql_mode='STRICT_TRANS_TABLES',default_storage_engine=INNODB",#推荐：启用严格模式,在插入时将警告升级为错误
+            'connect_timeout':10,
+            'read_timeout':30,
+            'write_timeout':30,
+            #"read_default_file":"/～/.my.cnf"#可选：使用配置文件可以删除上面的NAME...在配置文件中写
+        },
+        'CONN_MAX_AGE':300,                   #可选：连接持久化时间
+        'ATOMIC_REQUESTS':False,              #谨慎使用：每个HTTP请求包装事务
+        'TEST':{
+            'CHARSET':'utf8mb4',             #可选：测试数据库字符集
+            'COLLATION':'utf8mb4_unicode_ci' #可选：测试数据库排序规则
+        }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
