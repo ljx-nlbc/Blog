@@ -7,26 +7,35 @@ from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
+from django.core.paginator import Paginator
 
 from .models import Article,Tag,Category,Comment
 from .forms import ArticleForm,CommentForm
 
-class ArticleListView(generic.ListView):
-    """文章列表视图(通用视图)"""
-    model = Article
-    template_name = 'blog/article_list.html'
-    context_object_name = "articles"
-    paginate_by = 10
+# class ArticleListView(generic.ListView):
+#     """文章列表视图(通用视图)"""
+#     model = Article
+#     template_name = 'blog/article_list.html'
+#     context_object_name = "articles"
+#     paginate_by = 1
 
-    def get_queryset(self):
-        #这是通用视图的方法，对该方法进行了重写:预加载外键关系，减少查询次数
-        return Article.objects.all().select_related('author','category')
+#     def get_queryset(self):
+#         #这是通用视图的方法，对该方法进行了重写:预加载外键关系，减少查询次数
+#         return Article.objects.all().select_related('author','category')
     
-# def ArticleListView(request):
-#     """文章列表视图"""
-#     articles = Article.objects.all()
-#     context = {"articles":articles}
-#     return render(request,'blog/article_list.html',context)
+    
+def ArticleListView(request):
+    """文章列表视图"""
+    articles = Article.objects.all().order_by('-created')
+    paginator = Paginator(articles,5)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    elided_page_range = paginator.get_elided_page_range(page_number,
+                                                        on_each_side=2,
+                                                        on_ends=1)
+    context = {"articles":articles,"page_obj":page_obj,'elided_page_range':elided_page_range,'request': request}
+    return render(request,'blog/article_list.html',context)
 
 
 # class ArticleDetailView(generic.DetailView):
