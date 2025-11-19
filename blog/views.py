@@ -12,6 +12,7 @@ from django.core.paginator import Paginator
 from .models import Article,Tag,Category,Comment
 from .forms import ArticleForm,CommentForm
 
+
 # class ArticleListView(generic.ListView):
 #     """文章列表视图(通用视图)"""
 #     model = Article
@@ -31,7 +32,7 @@ def ArticleListView(request):
 
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    elided_page_range = paginator.get_elided_page_range(page_number,
+    elided_page_range = paginator.get_elided_page_range(page_obj.number,
                                                         on_each_side=2,
                                                         on_ends=1)
     context = {"articles":articles,"page_obj":page_obj,'elided_page_range':elided_page_range,'request': request}
